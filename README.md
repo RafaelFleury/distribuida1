@@ -50,27 +50,75 @@ sonnet_version/
 └── README.md                      # Este arquivo
 ```
 
-## 🎯 Como Executar
+## Como Executar
 
-### Terminal 1 - Servidor de Impressão
+### Com scripts
+Use os scripts auxiliares que configuram tudo automaticamente:
+
+#### Terminal 1 - Servidor de Impressão
+
+```bash
+./scripts/run_server.sh
+```
+
+#### Terminal 2 - Cliente 1
+
+```bash
+./scripts/run_client.sh 1
+```
+
+#### Terminal 3 - Cliente 2
+
+```bash
+./scripts/run_client.sh 2
+```
+
+#### Terminal 4 - Cliente 3
+
+```bash
+./scripts/run_client.sh 3
+```
+
+**Opções do `run_client.sh`:**
+
+```bash
+./scripts/run_client.sh <id> [total_clientes] [porta_servidor]
+
+# Exemplos:
+./scripts/run_client.sh 1          # Cliente 1 de 3 (padrão)
+./scripts/run_client.sh 2 4        # Cliente 2 de 4 clientes
+./scripts/run_client.sh 1 3 50061  # Cliente 1, servidor customizado
+```
+
+O script calcula automaticamente:
+
+- Porta do cliente: `50051 + ID` (Cliente 1 → 50052, Cliente 2 → 50053...)
+- Lista de outros clientes conectados ao sistema
+- Endereço do servidor (padrão: `localhost:50051`)
+
+### Modo Manual
+
+Execute diretamente com Python especificando todas as configurações:
+
+#### Terminal 1 - Servidor de Impressão
 
 ```bash
 python3 src/printer_server.py --port 50051
 ```
 
-### Terminal 2 - Cliente 1
+#### Terminal 2 - Cliente 1
 
 ```bash
 python3 src/printing_client.py --id 1 --port 50052 --server localhost:50051 --clients localhost:50053,localhost:50054
 ```
 
-### Terminal 3 - Cliente 2
+#### Terminal 3 - Cliente 2
 
 ```bash
 python3 src/printing_client.py --id 2 --port 50053 --server localhost:50051 --clients localhost:50052,localhost:50054
 ```
 
-### Terminal 4 - Cliente 3
+#### Terminal 4 - Cliente 3
 
 ```bash
 python3 src/printing_client.py --id 3 --port 50054 --server localhost:50051 --clients localhost:50052,localhost:50053
@@ -169,6 +217,19 @@ kill <PID>
 
 3. Usar porta diferente:
 
+**Com scripts (automático):**
+
+```bash
+# Servidor customizado na porta 50061
+./scripts/run_server.sh 50061
+
+# Clientes apontando para servidor customizado
+./scripts/run_client.sh 1 3 50061
+./scripts/run_client.sh 2 3 50061
+```
+
+**Manualmente:**
+
 ```bash
 python3 src/printer_server.py --port 50061
 python3 src/printing_client.py --id 1 --port 50062 --server localhost:50061 ...
@@ -190,14 +251,19 @@ python3 src/printing_client.py --id 1 --port 50062 --server localhost:50061 ...
    - Sistema remove automaticamente após timeout de 5s
 
 3. **Lista de clientes incorreta**
+
    - Verificar se portas em `--clients` correspondem aos clientes realmente ativos
-   - Exemplo para 2 clientes:
+   - **Dica:** Use os scripts auxiliares que calculam automaticamente a lista correta
+   - Exemplo manual para 2 clientes:
 
      ```bash
-     # Cliente 1
+     # Com scripts (automático)
+     ./scripts/run_client.sh 1 2  # Cliente 1 de 2
+     ./scripts/run_client.sh 2 2  # Cliente 2 de 2
+
+     # Manualmente
      python3 src/printing_client.py --id 1 --port 50052 --server localhost:50051 --clients localhost:50053
 
-     # Cliente 2
      python3 src/printing_client.py --id 2 --port 50053 --server localhost:50051 --clients localhost:50052
      ```
 
